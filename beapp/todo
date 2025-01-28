@@ -1,0 +1,57 @@
+model UserStudyProgress{
+  id  String @id @default(uuid())
+  completedModules String[]
+  lastCompletedModule  String
+  currentModule String  
+  upcomingModule String
+  modules Modules[]
+  userStudyProfileId String
+  userStudyProfile UserStudyProfile @relation(fields: [userStudyProfileId], references: [id])
+}
+
+model Modules {
+  id Int @id @default(autoincrement())
+  moduleName String 
+  moduleDescription String
+  userStudyProgressId String
+  userStudyProgress UserStudyProgress @relation(fields: [userStudyProgressId], references: [id])
+}
+
+MAIN - 
+Want to synchronise the user study progress with the modules
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+in modules the data example is  
+
+ [
+  {
+    moduleName: 'Javascript Basics',
+    moduleDescription: 'Introduction to Javascript, its usage, and syntax. Learn about variables, data types, and operators.'
+  },
+  {
+    moduleName: 'Control Structures',
+    moduleDescription: 'Learn how to use if-else statements, switch cases, loops, and control flow in Javascript.'
+  },
+  {
+    moduleName: 'Functions and Scope',
+    moduleDescription: 'Understand the concepts of functions, parameters, arguments, return statements, and scope.'
+  },
+  {
+    moduleName: 'Objects and Arrays',
+    moduleDescription: 'Explore the concepts of Objects and Arrays, their properties, methods, and how to manipulate them.'
+  },
+  {
+    moduleName: 'DOM Manipulation',
+    moduleDescription: 'Learn how to manipulate the Document Object Model (DOM) to change webpage content dynamically.'
+  },
+  {
+    moduleName: 'Events and Listeners',
+    moduleDescription: 'Understand the concept of events, event handlers, and event listeners in Javascript.'
+  },
+  {
+    moduleName: 'Introduction to ES6',
+    moduleDescription: 'Introduce ES6 features like let, const, arrow functions, promises, and modules.'
+  }
+]
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

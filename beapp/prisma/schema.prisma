@@ -7,12 +7,72 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(uuid()) @db.Uuid
-  userName String? @unique
-  email     String   @unique
-  password  String
-  avatar   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum Level {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCE
 }
+
+enum Role {
+  USER
+  BOT
+}
+
+enum Courses {
+  JAVASCRIPT
+  PYTHON
+  REACTJS
+}
+
+model User {
+  id          String       @id @default(uuid())
+  email       String       @unique
+  password    String       @unique
+  username    String?      @unique
+  avatar      String?
+  userStudyProfile UserStudyProfile?
+  chats       Chats[]
+}
+
+model UserStudyProfile {
+  id       String  @id @default(uuid())
+  programmingLanguages Courses
+  level    Level   @default(BEGINNER)
+  userId   String  @unique
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userStudyProgress UserStudyProgress[]
+}
+
+
+model UserStudyProgress{
+  id  String @id @default(uuid())
+  completedModules String[]
+  lastCompletedModule  String
+  currentModule String  
+  upcomingModule String
+  modules Modules[]
+  userStudyProfileId String
+  userStudyProfile UserStudyProfile @relation(fields: [userStudyProfileId], references: [id])
+}
+
+model Modules {
+  id Int @id @default(autoincrement())
+  moduleName String 
+  moduleDescription String
+  userStudyProgressId String
+  userStudyProgress UserStudyProgress @relation(fields: [userStudyProgressId], references: [id])
+}
+
+model Chats{
+  id String @id @default(uuid())
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  messages String[]
+  role     Role 
+}
+
+
+
+//checkpoints
+//syllabus for each role (points)
+

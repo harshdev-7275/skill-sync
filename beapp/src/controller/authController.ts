@@ -116,8 +116,9 @@ return
 }
 const getUser = async(req:Request, res:Response)=>{
   try {
-    console.log("in get user")
+    
     const token = req.headers.authorization?.split(" ")[1]
+    console.log("in get user",token)
     const currUser = verifyToken(token as string)
     console.log("in get curr", currUser)
     if(currUser === null){
@@ -141,6 +142,13 @@ const getUser = async(req:Request, res:Response)=>{
         email:(currUser as JwtPayload).email
       }
     })
+    if(user === null){
+      res.status(400).json({
+        success:false,
+        message:"User not found"
+      })
+      return;
+    }
    res.status(200).json({
     success:true,
     user:user
@@ -179,7 +187,7 @@ const checkUserName= async(req:Request, res:Response)=>{
     }
     const isUserNameExist = await prisma.user.findUnique({
       where:{
-        userName:username
+        username
       }
     })
     if(isUserNameExist){
@@ -219,6 +227,7 @@ const updateProfile= async(req:Request, res:Response)=>{
       return
     }
     const currUser = verifyToken(token as string)
+    console.log("currUser",currUser)
     if(currUser === null){
       res.status(404).json({
         success:false,
@@ -241,7 +250,7 @@ const updateProfile= async(req:Request, res:Response)=>{
         email:(currUser as JwtPayload).email
       },
       data:{
-        userName:username,
+        username,
         avatar:avatar
       }
     })
