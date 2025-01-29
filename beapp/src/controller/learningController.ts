@@ -81,27 +81,20 @@ const generateCourseModule = async (req: Request, res: Response) => {
         console.log("parsedData", parsedData.modules);
         const modulesData : Modules[] = parsedData.modules;
 
-        for (const module of modulesData) {
-            const newModule = await prisma.modules.create({
-               data:{
+
+            await prisma.modules.createMany({
+                data: modulesData.map(module => ({
+                subjectName: module.subjectName,
                 moduleName: module.moduleName,
-                moduleDescription:module.moduleDescription,
-                userStudyProgressId: req.email
-               }
+                moduleDescription: module.moduleDescription,
+                moduleNumber: module.moduleNumber,
+                level: module.level
+                }))
             });
-            console.log("newModule", newModule);
-        }
-
-        // const newModules = await prisma.modules.create({
-        //     data:{
-
-        //     }
-        // })
-        // Send the response back to the client
-        //  res.status(200).json({
-        //     success: true,
-        //     data: chatBotResponse.choices[0].message
-        // });
+        res.status(200).json({
+            success: true,
+            message: "Modules generated successfully",
+        })
         return
     } catch (error) {
         console.log("error in generate course module", error);
@@ -109,6 +102,7 @@ const generateCourseModule = async (req: Request, res: Response) => {
             success: false,
             message: "Internal server error"
         });
+        return
     }
 };
 

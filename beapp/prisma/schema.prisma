@@ -50,18 +50,20 @@ model UserStudyProgress{
   lastCompletedModule  String
   currentModule String  
   upcomingModule String
-  modules Modules[]
   userStudyProfileId String
   userStudyProfile UserStudyProfile @relation(fields: [userStudyProfileId], references: [id])
 }
 
 model Modules {
   id Int @id @default(autoincrement())
-  moduleName String 
+  subjectName String
+  moduleName String
+  moduleNumber Int
   moduleDescription String
-  userStudyProgressId String
-  userStudyProgress UserStudyProgress @relation(fields: [userStudyProgressId], references: [id])
+  level String
 }
+
+
 
 model Chats{
   id String @id @default(uuid())

@@ -20,12 +20,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element  }) => {
   // if (window.location.pathname === '/complete-profile') {
   //   return element;
   // }
-  if (!avatar || !username) {
-    
+  if (!avatar || !username) {    
     console.log("Profile incomplete, redirecting to complete profile");
     return <Navigate to="/complete-profile" />;
   }
-
   return element;
 };
 

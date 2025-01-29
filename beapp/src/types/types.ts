@@ -11,4 +11,7 @@ export interface UserProgress {
 export type Modules = {
     moduleName: string;
     moduleDescription: string;
+    moduleNumber: number;
+    subjectName: string;
+    level: string;
 }

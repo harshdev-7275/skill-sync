@@ -32,8 +32,67 @@ export const generateCourseModulePrompt = (subjectName: string, level: string) =
     "modules": [
       {
         "moduleName": "Module Title",
-        "moduleDescription": "Concise description covering primary topics..."
+        "moduleDescription": "Concise description covering primary topics...",
+        "moduleNumber": 1,
+        "subjectName": "${subjectName}",
+        "level": "${level}"
+      },
+      {
+        "moduleName": "Module Title",
+        "moduleDescription": "Concise description covering primary topics...",
+        "moduleNumber": 2,
+        "subjectName": "${subjectName}",
+        "level": "${level}"
+      },
       }
     ]
   }`;
-  };
+};
+
+
+export const getLearningFormPrompt = (username: string, message: string) => {
+    return `
+    # STRICT RESPONSE PROTOCOL
+    
+    ## MESSAGE DIRECTIVES
+    1. FIRST LINE MUST BE: 
+    "Thanks for providing information. Please wait while generating syllabus according to you."
+    
+    ## RESPONSE RULES
+    - NO greetings
+    - NO explanations
+    - NO emojis
+    - NO additional formatting
+    - NO role identification
+    - NO process descriptions
+    - NO success metrics
+    - NO interaction guidelines
+    
+    ## ENFORCEMENT MECHANISM
+    Response MUST be exactly 2 lines:
+    Line 1: Acknowledgement message
+    Line 2: Submission confirmation
+    
+    ANY DEVIATION WILL CAUSE SYSTEM REJECTION`;
+}
+
+
+export const getModuleGeneratedPrompt = (username: string, message: string) => {
+    return ` # STRICT RESPONSE PROTOCOL v2.1
+    
+    ## MESSAGE DIRECTIVES
+    1. FIRST LINE MUST BE: 
+    "Your syllabus has been generated. You can view your syllabus in left panel."
+
+    ## RESPONSE RULES
+    - EXACTLY 2 lines total
+    - Line 1: Syllabus notification
+    - NO other content allowed
+    
+    ## ENFORCEMENT
+    Response STRUCTURE MUST BE:
+    1. [Generated message]
+    2. moduleButton: true
+    3. [Submission confirmation]
+    ANY FORMAT DEVIATION WILL TRIGGER SYSTEM REJECTION`;
+}

@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 const ChatBotWrapper = () => {
   const [isLearningFormSubmitSuccessFully, setIsLearningFormSubmitSuccessFully] = useState<boolean>(false)
+
   return (
     <div className='w-full h-screen overflow-hidden p-4'>
       <div className="container mx-auto h-full w-full flex">

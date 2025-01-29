@@ -1,7 +1,7 @@
 import { RootState } from "@/store/store"
 import { toast } from "../../hooks/use-toast"
 import axiosInstance from "../../lib/axiosInstance"
-import { setLearningForm } from "../../slices/chatBotSlice"
+import { setLearningForm, setLearningFormSubmitSuccessFullyGlobal, setModuleGenerated } from "../../slices/chatBotSlice"
 import { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
@@ -14,6 +14,24 @@ const LearningForm = ({ setIsLearningFormSubmitSuccessFully, setIsLearningFormOp
     const dispatch = useDispatch();
     const [formData, setFormData] = useState({ language: "", level: "" });
     const [error, setError] = useState("");
+
+
+    const generateModules = async (subjectName: string, level: string) => {
+        try {
+            const response = await axiosInstance.post("/learning/generate-course-module", {
+                subjectName, 
+                level,
+            },{
+                timeout: 50000,
+            })
+            console.log("response in generate modules", response.data)
+            if(response.data.success === true){
+                dispatch(setModuleGenerated(true))
+            }
+        } catch (error) {
+            console.error("Error in generate modules", error);
+        }
+    }
   
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -22,7 +40,6 @@ const LearningForm = ({ setIsLearningFormSubmitSuccessFully, setIsLearningFormOp
         setError("Please fill in all fields");
         return;
       }
-  
       try {
         const response = await axiosInstance.post(
           "/learning/save-initial-learning",
@@ -43,6 +60,8 @@ const LearningForm = ({ setIsLearningFormSubmitSuccessFully, setIsLearningFormOp
           });
           setIsLearningFormOpen(false);
           dispatch(setLearningForm(false));
+          generateModules("Javascript", "Beginner")
+          dispatch(setLearningFormSubmitSuccessFullyGlobal(true))
         }
       } catch (error) {
         setError("Error submitting the form");

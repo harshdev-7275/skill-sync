@@ -7,8 +7,9 @@ import { ScrollArea } from '../ui/scroll-area';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { cn } from '../../lib/utils';
-import { useDispatch } from 'react-redux';
-import { setLearningForm } from '../../slices/chatBotSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLearningForm, setLearningFormSubmitSuccessFullyGlobal, setModuleGenerated, setModuleGeneratedButton } from '../../slices/chatBotSlice';
+import { RootState } from '@/store/store';
 
 // Enhanced useChat hook with form trigger handling
 const useChat = () => {
@@ -22,20 +23,40 @@ const useChat = () => {
         setInput(e.target.value);
     };
 
-    const submitMessage = async (messageContent: string) => {
+    const submitMessage = async (messageContent: string , isFormSubmit?: boolean, isModuleGenerated?: boolean) => {
         if (!messageContent.trim()) return;
 
         setMessages(prev => [...prev, { role: 'user', content: messageContent }]);
         setIsLoading(true);
+            let payload = {
 
+            }
         try {
+            if(isFormSubmit === true ){
+                payload={
+                    message: messageContent,
+                    isFormSubmit: true
+                }
+                dispatch(setLearningFormSubmitSuccessFullyGlobal(false))
+            }else if(isModuleGenerated === true){
+                payload={
+                    message: messageContent,
+                    isModuleGenerated: true
+                }
+                dispatch(setModuleGenerated(false))
+            }else{
+                payload={
+                    message: messageContent
+                }
+            }
+            
             const response = await fetch('http://localhost:3000/chatbot/respond', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify({ message: messageContent })
+                body: JSON.stringify(payload)
             });
 
             if (!response.body) throw new Error('No response body');
@@ -60,6 +81,9 @@ const useChat = () => {
                             if (data.isLearningForm) {
                                 dispatch(setLearningForm(true))
                                 setShowLearningForm(true);
+                            }
+                            if(data.isModuleButton === true){
+                                dispatch(setModuleGeneratedButton(true))
                             }
                         } else if (data.content) {
                             assistantMessage.content += data.content;
@@ -118,15 +142,24 @@ const ChatBot = ({ isLearningFormSubmitSuccessFully, setIsLearningFormSubmitSucc
     const scrollRef = useRef<HTMLDivElement>(null);
     const [showScrollButton, setShowScrollButton] = useState(false);
     const [lastMessageRef, setLastMessageRef] = useState<HTMLDivElement | null>(null);
-
+    const isModuleGenerated = useSelector((state: RootState) => state.chatBot.isModuleGenerated);
+    const isLearningFormSubmitSuccessFullyGlobal = useSelector((state: RootState) => state.chatBot.isLearningFormSubmitSuccessFullyGlobal);
+    console.log("value in chatbot", isLearningFormSubmitSuccessFullyGlobal, isModuleGenerated)
     useEffect(() => {
-        if (isLearningFormSubmitSuccessFully) {
-            // Submit custom message to LLM
-            submitMessage('Form submitted successfully');
-            // Reset the success state
+        if (isLearningFormSubmitSuccessFullyGlobal === true ) {  
+            console.log("value in chatbot of isLearningFormSubmitSuccessFullyGlobal", isLearningFormSubmitSuccessFullyGlobal)
+            
+            submitMessage('Form submitted successfully', true, false);
             setIsLearningFormSubmitSuccessFully(false);
         }
-    }, [isLearningFormSubmitSuccessFully]);
+    }, [isLearningFormSubmitSuccessFullyGlobal]);
+    
+    useEffect(()=>{
+        if(isModuleGenerated === true){
+            console.log("value in chatbot ofisModuleGenerated ", isModuleGenerated)
+            submitMessage('Module generated successfully',false , true);
+        }
+    },[isModuleGenerated])
 
     const handleScroll = () => {
         if (scrollRef.current) {
@@ -173,8 +206,6 @@ const ChatBot = ({ isLearningFormSubmitSuccessFully, setIsLearningFormSubmitSucc
             });
         }
     };
-
-
     return (
         <TooltipProvider>
             <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black text-white">
